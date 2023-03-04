@@ -3,16 +3,12 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
-
 import torchvision
 import torchvision.transforms as transforms
 from layer.bitflip import bitFlip
 import os
-
 from models import *
 from utils import progress_bar
-
-
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -26,31 +22,20 @@ transform_test = transforms.Compose([
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
-
 testset = torchvision.datasets.CIFAR100(
     root='./data', train=False, download=True, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
     testset, batch_size=50, shuffle=False, num_workers=2)
 
-
-
-
 print('==> Building model..')
 
 
-
-
 #net = VGG('VGG19')
-
 net = addmul_fi_VGG('VGG19')
 
 
 net = net.to(device)
-
 checkpoint = torch.load('./checkpoint/vgg19ckp.pth')
-
-
-
 net.load_state_dict(checkpoint)
 
 criterion = nn.CrossEntropyLoss()
@@ -85,14 +70,11 @@ def test(net,epoch):
 
 tloss=0
 totalacc2 = 0
-for epoch in range(0, epochs):    
-
-    
+for epoch in range(0, epochs):        
 
     acc2,loss = test(net,epoch)
     totalacc2 += acc2
     tloss += loss
-
 
 totalacc2 /= epochs
 tloss /= epochs
