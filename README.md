@@ -4,4 +4,4 @@
 * bitstring（3.1.9）
 * torchvision（0.4.2）
 ## Usage
-### Training
+### 1、Training
