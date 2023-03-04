@@ -12,3 +12,4 @@ python train.py
 ```ruby
 python test_vgg19.py
 ```
+In test_vgg19.py, using net = VGG('VGG19') in line 33 to test the accuracy of the standard convolution without failure, using net = VGG_fi('VGG19') in line 34 to test standard convolutional when there is a failure
