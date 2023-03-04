@@ -8,3 +8,7 @@
 ```ruby
 python train.py
 ```
+### 2、Evaluating
+```ruby
+python test_vgg19.py
+```
