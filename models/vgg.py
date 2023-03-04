@@ -46,9 +46,9 @@ class VGG(nn.Module):
 
 
 
-class addmul_fi_VGG(nn.Module):
+class VGG_fi(nn.Module):
     def __init__(self, vgg_name):
-        super(addmul_fi_VGG, self).__init__()
+        super(VGG_fi, self).__init__()
         self.features = self._make_layers(cfg[vgg_name])
         self.classifier = nn.Linear(512, 100)
 
