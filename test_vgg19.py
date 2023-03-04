@@ -31,7 +31,7 @@ print('==> Building model..')
 
 
 #net = VGG('VGG19')
-net = addmul_fi_VGG('VGG19')
+net = VGG_fi('VGG19')
 
 
 net = net.to(device)
