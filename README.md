@@ -5,3 +5,4 @@
 * torchvision（0.4.2）
 ## Usage
 ### 1、Training
+``  python train.py
