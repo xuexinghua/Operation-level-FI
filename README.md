@@ -1,3 +1,5 @@
+## Operation-level fault injection
+Failure analysis on the data of the multiplication-addition calculation process, which can distinguish different operator implementations (e.g normal convolution, winograd convolution and FFT convolution).
 ## Requirements
 * Python (3.7)
 * pytorch（1.3.1）
