@@ -13,3 +13,4 @@ python train.py
 python test_vgg19.py
 ```
 In ```test_vgg19.py```, using ```net = VGG('VGG19')``` in line 33 to test the accuracy of the standard convolution without failure, using ```net = VGG_fi('VGG19')``` in line 34 to test the accuracy of the standard convolution with failure.
+You can modify the ```ber = XXX``` in ```./layer/layers.py``` to set the bit error rate parameter.
