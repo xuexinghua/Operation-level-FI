@@ -48,7 +48,37 @@ def FI(p,ab):
        fiinput = fiinput.index_put_((valueindex,), fivalue)
     return fiinput
     
-
+def operation_fi(x):       
+	
+    y = x.shape
+    z = len(y)
+    if z == 2:
+        b = x.shape[0]        
+        h = x.shape[1]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h))        
+    elif z == 3:
+        b = x.shape[0]        
+        h = x.shape[1]
+        w = x.shape[2]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h,w))        
+    elif z == 4:
+        b = x.shape[0]        
+        h = x.shape[1]        
+        w = x.shape[2]
+        f = x.shape[3]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h,w,f))    
+    elif z == 5:
+        b = x.shape[0]        
+        h = x.shape[1]        
+        w = x.shape[2]
+        f = x.shape[3]
+        m = x.shape[4]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h,w,f,m))          
+    return p
 
 def diret_conv2d(in_feature, kernel,  padding, bias=None):
            
@@ -164,37 +194,3 @@ class conv2d_fi(nn.Module):
 						self.register_parameter('bias', None)
 	def forward(self, x):
 		return diret_conv2d_fi(x, self.weight, self.padding, self.bias)        
-
-def operation_fi(x):       
-	
-    y = x.shape
-    z = len(y)
-    if z == 2:
-        b = x.shape[0]        
-        h = x.shape[1]
-        fiinput = FI(x, ber)
-        p = torch.reshape(fiinput,(b,h))        
-    elif z == 3:
-        b = x.shape[0]        
-        h = x.shape[1]
-        w = x.shape[2]
-        fiinput = FI(x, ber)
-        p = torch.reshape(fiinput,(b,h,w))        
-    elif z == 4:
-        b = x.shape[0]        
-        h = x.shape[1]        
-        w = x.shape[2]
-        f = x.shape[3]
-        fiinput = FI(x, ber)
-        p = torch.reshape(fiinput,(b,h,w,f))    
-    elif z == 5:
-        b = x.shape[0]        
-        h = x.shape[1]        
-        w = x.shape[2]
-        f = x.shape[3]
-        m = x.shape[4]
-        fiinput = FI(x, ber)
-        p = torch.reshape(fiinput,(b,h,w,f,m))          
-    return p
-
-
