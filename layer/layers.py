@@ -63,8 +63,13 @@ def diret_conv2d(in_feature, kernel,  padding, bias=None):
         out_cols = ((orig_w + 2*padding - kew) // stride) + 1
         inp_unf = torch.nn.functional.unfold(in_feature, (keh, kew), padding=padding)
         w = kernel.contiguous().view(kernel.size(0), -1).t()
-        x = inp_unf.transpose(1, 2)                           
-        y = x.matmul(w) 
+        x = inp_unf.transpose(1, 2)    	
+	x = x.unsqueeze(1).expand(-1, w.shape[1], -1, -1)
+        w = w.transpose(0,1).unsqueeze(1).expand(-1, x.shape[1], -1)	
+	p = x * w
+	c = torch.cumsum(p, dim=3)
+	y = c[:,:,:, -1,...]
+	y = y.transpose(1,2)	
         if bias is None:        
             out_unf = y.transpose(1, 2)
         else:
@@ -84,9 +89,9 @@ class conv2d(nn.Module):
 		self.weight = torch.nn.Parameter(torch.Tensor(out_channels, in_channels,kernel_size, kernel_size))
 
 		if bias:
-						self.bias = torch.nn.Parameter(torch.Tensor(out_channels))            
+			self.bias = torch.nn.Parameter(torch.Tensor(out_channels))            
 		else:
-						self.register_parameter('bias', None)
+			self.register_parameter('bias', None)
 	def forward(self, x):
 		return diret_conv2d(x, self.weight,  self.padding, self.bias)
 
