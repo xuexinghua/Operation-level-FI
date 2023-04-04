@@ -64,9 +64,9 @@ def diret_conv2d(in_feature, kernel,  padding, bias=None):
         inp_unf = torch.nn.functional.unfold(in_feature, (keh, kew), padding=padding)
         w = kernel.contiguous().view(kernel.size(0), -1).t()
         x = inp_unf.transpose(1, 2)    	
-	x = x.unsqueeze(1).expand(-1, w.shape[1], -1, -1)
-        w = w.transpose(0,1).unsqueeze(1).expand(-1, x.shape[1], -1)	
-	p = x * w
+	x1 = x.unsqueeze(1).expand(-1, w.shape[1], -1, -1)
+        w1 = w.transpose(0,1).unsqueeze(1).expand(-1, x.shape[1], -1)	
+	p = x1 * w1
 	c = torch.cumsum(p, dim=3)
 	y = c[:,:,:, -1,...]
 	y = y.transpose(1,2)	
@@ -118,23 +118,23 @@ def diret_conv2d_fi(in_feature, kernel, padding, bias=None):
 
     p=x1*w1      
                          
-    #-------------------    
-    b = p.shape[0]
-    a = p.shape[1]
-    h = p.shape[2]
-    w = p.shape[3]       
-    fiinput = FI(p, ber)     
-    p = torch.reshape(fiinput, (b,a,h,w))
-    #-------------------      
-                  
-    y= (p).sum(3)        
-    
-    #-------------------  
-    b1 = y.shape[0]
-    a1 = y.shape[1]
-    h1 = y.shape[2]
-    fiinput = FI(y, ber)                   
-    y = torch.reshape(fiinput, (b1,a1,h1))     
+    #-------------------        
+    p = operation_fi(p)
+    #-------------------                    
+          
+    c = torch.cumsum(p, dim=3)
+
+    #-------------------                 
+    c_fi = operation_fi(c) 
+    #-------------------   
+              
+    y_sum = c_fi[:,:,:, -1,...]     
+    c_err = c_fi[:,:,:, 1:-1,...] - c[:,:,:, 1:-1,...]
+    c_error = c_err.sum(dim=-1)               
+    y = y_sum + c_error	
+	
+    #-------------------                   
+    y = operation_fi(y)    
     #-------------------             
       
     y = y.transpose(1,2)            
@@ -165,6 +165,36 @@ class conv2d_fi(nn.Module):
 	def forward(self, x):
 		return diret_conv2d_fi(x, self.weight, self.padding, self.bias)        
 
-
+def operation_fi(x):       
+	
+    y = x.shape
+    z = len(y)
+    if z == 2:
+        b = x.shape[0]        
+        h = x.shape[1]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h))        
+    elif z == 3:
+        b = x.shape[0]        
+        h = x.shape[1]
+        w = x.shape[2]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h,w))        
+    elif z == 4:
+        b = x.shape[0]        
+        h = x.shape[1]        
+        w = x.shape[2]
+        f = x.shape[3]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h,w,f))    
+    elif z == 5:
+        b = x.shape[0]        
+        h = x.shape[1]        
+        w = x.shape[2]
+        f = x.shape[3]
+        m = x.shape[4]
+        fiinput = FI(x, ber)
+        p = torch.reshape(fiinput,(b,h,w,f,m))          
+    return p
 
 
