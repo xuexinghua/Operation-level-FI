@@ -10,11 +10,7 @@ import multiprocessing
 from layer.bitflip import bit2float, float2bit
 from bitstring import BitArray
 
-
-
 ber = 1e-6
-
-
 
 def FI(p,ab):
 
@@ -26,8 +22,7 @@ def FI(p,ab):
 
     if finum==0:
        fiinput = fiinput
-    else:
-            
+    else:      
        index = np.random.randint(0,bitnum,size=finum)
        allbitindex = torch.from_numpy(index).cuda()    
        valueindex = allbitindex//32
@@ -137,36 +132,20 @@ def diret_conv2d_fi(in_feature, kernel, padding, bias=None):
     stride=1
     out_rows = ((orig_h + 2*padding - keh) // stride) + 1
     out_cols = ((orig_w + 2*padding - kew) // stride) + 1
-       
-    inp_unf = torch.nn.functional.unfold(in_feature, (keh, kew), padding=padding)        
-    
+    inp_unf = torch.nn.functional.unfold(in_feature, (keh, kew), padding=padding)          
     w = kernel.contiguous().view(kernel.size(0), -1).t()
-    x = inp_unf.transpose(1, 2)                
-         
+    x = inp_unf.transpose(1, 2)                    
     x1= x.unsqueeze(1).expand(-1, w.shape[1], -1, -1)
     w1 = w.transpose(0,1).unsqueeze(1).expand(-1, x.shape[1], -1)
-
-    p=x1*w1      
-                         
-    #-------------------        
-    p = operation_fi(p)
-    #-------------------                    
-          
-    c = torch.cumsum(p, dim=3)
-
-    #-------------------                 
-    c_fi = operation_fi(c) 
-    #-------------------   
-              
+    p=x1*w1                                 
+    p = operation_fi(p)                      
+    c = torch.cumsum(p, dim=3)        
+    c_fi = operation_fi(c)       
     y_sum = c_fi[:,:,:, -1,...]     
     c_err = c_fi[:,:,:, 1:-1,...] - c[:,:,:, 1:-1,...]
     c_error = c_err.sum(dim=-1)               
-    y = y_sum + c_error	
-	
-    #-------------------                   
-    y = operation_fi(y)    
-    #-------------------             
-      
+    y = y_sum + c_error	                   
+    y = operation_fi(y)                 
     y = y.transpose(1,2)            
     if bias is None:        
          out_unf = y.transpose(1, 2)
@@ -180,17 +159,14 @@ class conv2d_fi(nn.Module):
 
 	def __init__(self, in_channels, out_channels, kernel_size, padding,bias=None):
 		super(conv2d_fi, self).__init__()		
-		#Initialize misc. variables
-   
-
 		self.in_channels = in_channels  
 		self.out_channels = out_channels
 		self.padding = padding
 		self.weight = torch.nn.Parameter(torch.Tensor(out_channels, in_channels,kernel_size, kernel_size))
  
 		if bias:
-						self.bias = torch.nn.Parameter(torch.Tensor(out_channels))            
+			self.bias = torch.nn.Parameter(torch.Tensor(out_channels))            
 		else:
-						self.register_parameter('bias', None)
+			self.register_parameter('bias', None)
 	def forward(self, x):
 		return diret_conv2d_fi(x, self.weight, self.padding, self.bias)        
