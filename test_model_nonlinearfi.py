@@ -9,7 +9,7 @@ import torchvision.transforms as transforms
 from layer.bitflip import bitFlip
 import os
 import argparse
-from models_activatefi import *
+from models_activate import *
 from utils import progress_bar
 from data_loader import test_loader
 
