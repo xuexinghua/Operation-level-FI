@@ -45,8 +45,8 @@ CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layer LAYERTYPE ] [ --be
 ```
 
 Its optional arguments are the following:
-* --layer: Specify the layer that needs to perform fault injection (e.g., direct_conv, win_conv, fft_conv, fc, gemm, ReLU, GELU, softmax, avgpool2d, maxpool2d)
-* --ber: Bit Error Rate. （e.g., 1E-6）
+* --layer: Specify the layer that needs to perform fault injection (direct_conv, win_conv, fft_conv, fc, gemm, ReLU, GELU, softmax, avgpool2d, maxpool2d, etc)
+* --ber: Bit Error Rate (e.g., 1E-6)
 
 2、Model Fault Injection
 
@@ -60,6 +60,9 @@ Fault Injection for Nonlinear Layers in Model
 CUDA_VISIBLE_DEVICES=XXX python test_model_nonlinearfi.py  [ --net MODEL ] [ --dataset DATASET ] [ --ber BITERRORRATE ]
 ```
 
+Its optional arguments are the following:
+* --net: When running the script "test_model_linearfi.py", you can choose vgg19_fi, winvgg19_fi, fftvgg19_fi, resnet_fi, etc. When running the script "test_model_nonlinearfi.py", you can choose vgg19_ReLU_fi, vgg19_BatchNorm2d_fi, vgg19_MaxPool2d_fi, resnet_AvgPool2d_fi, etc.
+* --dataset: In the case given in the models/ or models_activatefi/ folder, the vgg model uses the cifar100 dataset, and the resnet model uses the imagenet dataset.
+* --ber: Bit Error Rate. （e.g., 1E-6）
 
-In ```test_vgg19.py```, using ```net = VGG('VGG19')``` in line 33 to test the accuracy of the standard convolution without failure, using ```net = VGG_fi('VGG19')``` in line 34 to test the accuracy of the standard convolution with failure.
-You can modify the ```ber = XXX``` in ```./layer/layers.py``` to set the bit error rate parameter.
+The bit-flip model can be selected by modifying error_model in lines 8 or 9 in ```./layer/fi.py```
