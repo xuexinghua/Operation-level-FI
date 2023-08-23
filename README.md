@@ -5,6 +5,16 @@ OPFI(Operation Fault Injection) is an open-source Python tool for fault injectio
 * pytorch（1.3.1）
 * bitstring（3.1.9）
 * torchvision（0.4.2）
+## Summary of OPFI's capabilities
+
+As of now, OPFI can inject errors in the following layer operations.
+
+
+
+
+
+
+
 ## Usage
 ### 1、Training
 ```ruby
