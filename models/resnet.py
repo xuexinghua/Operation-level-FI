@@ -8,8 +8,6 @@ from layer.winograd_layers import winconv2d_fi, winconv2d
 from layer.fft_layer import FFTConv2d_fi, FFTConv2d
 tiles = 2    
 
-
-
 class Bottleneck(nn.Module):
     expansion = 4
 
@@ -17,13 +15,11 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, 3, stride, padding=1, bias=False)
-        
+        self.conv2 = nn.Conv2d(planes, planes, 3, stride, padding=1, bias=False)       
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = nn.ReLU()        
-        
+        self.relu = nn.ReLU()           
         self.downsample = downsample
         self.stride = stride
 
@@ -38,17 +34,13 @@ class Bottleneck(nn.Module):
         out = self.relu(out)
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
             residual = self.downsample(x)
-
         out += residual       
         out = self.relu(out)
 
         return out   
-        
-                
-            
+                                
 class fi_Bottleneck(nn.Module):
     expansion = 4
 
@@ -60,16 +52,13 @@ class fi_Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = nn.ReLU()        
-        
+        self.relu = nn.ReLU()               
         self.downsample = downsample
         self.stride = stride
 
     def forward(self, x):
-
-
+        
         residual = x
-
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.relu(out)
@@ -78,10 +67,8 @@ class fi_Bottleneck(nn.Module):
         out = self.relu(out)
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
             residual = self.downsample(x)
-
         out += residual       
         out = self.relu(out)
 
@@ -89,7 +76,6 @@ class fi_Bottleneck(nn.Module):
 
 class fi_win_Bottleneck(nn.Module):
     expansion = 4
-
     def __init__(self, ber, bit, inplanes, planes, stride=1, downsample=None):
         super(fi_win_Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
@@ -98,28 +84,22 @@ class fi_win_Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = nn.ReLU()
-        
+        self.relu = nn.ReLU()     
         self.downsample = downsample
         self.stride = stride
 
     def forward(self, x):
         residual = x
-
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.relu(out)
-
         out = self.conv2(out)
         out = self.bn2(out)
         out = self.relu(out)
-
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
-            residual = self.downsample(x)
-        
+            residual = self.downsample(x)    
         out += residual
         out = self.relu(out)
 
@@ -127,7 +107,6 @@ class fi_win_Bottleneck(nn.Module):
 
 class fi_fft_Bottleneck(nn.Module):
     expansion = 4
-
     def __init__(self, ber, bit, inplanes, planes, stride=1, downsample=None):
         super(fi_fft_Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
@@ -137,43 +116,32 @@ class fi_fft_Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
         self.relu = nn.ReLU()
-   
         self.downsample = downsample
         self.stride = stride
 
     def forward(self, x):
         residual = x
-
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.relu(out)
-
         out = self.conv2(out)
         out = self.bn2(out)
         out = self.relu(out)
-
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
-            residual = self.downsample(x)
-        
+            residual = self.downsample(x)       
         out += residual
         out = self.relu(out)
 
-        return out
-   
-          
-
+        return out          
 
 class ResNet(nn.Module):
 
     def __init__(self, ber, bit, block_1, block_2, layers, num_classes=1000):
         super(ResNet, self).__init__()
-
         self.ber = ber
-        self.bit = bit    
-            
+        self.bit = bit                
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -202,7 +170,6 @@ class ResNet(nn.Module):
                           stride=stride, bias=False),
                 nn.BatchNorm2d(planes * block_1.expansion),
             )
-
         layers = []
         layers.append(block_2(self.ber, self.bit, self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block_1.expansion
@@ -211,24 +178,20 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
 
         return x
-
         
 def fi_resnet50(ber, bit, pretrained=False, **kwargs):
  
@@ -236,8 +199,6 @@ def fi_resnet50(ber, bit, pretrained=False, **kwargs):
 
     return model
         
-
-
 def fi_win_resnet50(ber, bit, pretrained=False, **kwargs):
 
     model = ResNet(ber, bit, fi_win_Bottleneck, Bottleneck, [3, 4, 6, 3], **kwargs)
