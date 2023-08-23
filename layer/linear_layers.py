@@ -15,14 +15,11 @@ def quan_linear(x, w, bits, bias=None):
         quant = Quant(bits)
         w = quant(w)         
         w = w.t()
-
         x1= x.unsqueeze(1).expand(-1, w.shape[1], -1, -1)
         w1 = w.transpose(0,1).unsqueeze(1).expand(-1, x.shape[1], -1)     
-        p=x1*w1            
-              
+        p=x1*w1                          
         c = torch.cumsum(p, dim=3)
         y = c[:,:,:, -1,...]        
-
         y = y.transpose(1,2)             
         if bias is not None:  
            y += bias.unsqueeze(0).expand_as(y)      
@@ -44,42 +41,27 @@ class quan_Linear(nn.Module):
 	def forward(self, x):
 		return quan_linear(x, self.weight, self.bits, self.bias)  
 
-
 def quan_linear_fi(x, w, ber, bits, bias=None):      
         
         quant = Quant(bits)
         w = quant(w) 
         w = w.t()
-        
         x1= x.unsqueeze(1).expand(-1, w.shape[1], -1, -1)
         w1 = w.transpose(0,1).unsqueeze(1).expand(-1, x.shape[1], -1)
-     
         p=x1*w1
-        
-        p = operation_mulfi(p, ber, bits)
-                                       
-        c = torch.cumsum(p, dim=3)
-               
-        c_fi = operation_fi(c, ber, bits)        
-              
-        y_sum = c_fi[:,:,:, -1,...]        
-         
+        p = operation_mulfi(p, ber, bits)                            
+        c = torch.cumsum(p, dim=3)             
+        c_fi = operation_fi(c, ber, bits)                      
+        y_sum = c_fi[:,:,:, -1,...]                 
         c_err = c_fi[:,:,:, 1:-1,...] - c[:,:,:, 1:-1,...]
-        c_error = c_err.sum(dim=-1)        
-        
-        y = y_sum + c_error
-                       
-        y = operation_fi(y, ber, bits)    
-      
-        y = y.transpose(1,2)   
-  
-                  
+        c_error = c_err.sum(dim=-1)                
+        y = y_sum + c_error                       
+        y = operation_fi(y, ber, bits)          
+        y = y.transpose(1,2)                       
         if bias is not None:  
            y += bias.unsqueeze(0).expand_as(y)      
                
         return y
-
-
                       
 class quan_Linear_fi(nn.Module):
 
@@ -96,9 +78,6 @@ class quan_Linear_fi(nn.Module):
 						self.register_parameter('bias', None)
 	def forward(self, x):
 		return quan_linear_fi(x, self.weight, self.ber, self.bits, self.bias)
-
-
-
     
 def GEMM(a, b):
     b = b.transpose(2,3)
@@ -108,35 +87,19 @@ def GEMM(a, b):
     y = p.sum(-1)  
     return y
     
-
 def GEMM_fi(a, b, ber, bits):
 
     b = b.transpose(2,3)
     a1 = a.unsqueeze(3).expand(-1, -1,  -1, b.shape[2], -1)
     b1 = b.unsqueeze(2).expand(-1, -1, a.shape[2], -1,  -1)
-    p = a1*b1
-             
-    p = operation_mulfi(p, ber, bits)
-                
-    c = torch.cumsum(p, dim=-1)
-             
-    c_fi = operation_fi(c, ber, bits)     
-              
+    p = a1*b1             
+    p = operation_mulfi(p, ber, bits)                
+    c = torch.cumsum(p, dim=-1)             
+    c_fi = operation_fi(c, ber, bits)                   
     y_sum = c_fi[:,:,:,:, -1,...]
-
     c_err = c_fi[:,:,:,:, 1:-1,...] - c[:,:,:, :,1:-1,...]
-
-    c_error = c_err.sum(dim=-1)
-            
-    y = y_sum + c_error
-         
+    c_error = c_err.sum(dim=-1)            
+    y = y_sum + c_error         
     y = operation_fi(y, ber, bits) 
        
-    return y  
-
-  
- 
- 
- 
- 
-     
+    return y       
