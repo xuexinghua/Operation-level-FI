@@ -41,11 +41,11 @@ Then, download the trained model file and put it into the ```checkpoint/``` fold
 1、Single layer fault injection
 
 ```ruby
-CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layer LAYERTYPE ] [ --ber BITERRORRATE ]
+CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layertype LAYERTYPE ] [ --ber BITERRORRATE ]
 ```
 
 Its optional arguments are the following:
-* --layer: Specify the layer that needs to perform fault injection (direct_conv, win_conv, fft_conv, fc, gemm, ReLU, GELU, softmax, avgpool2d, maxpool2d, etc)
+* --layertype: Specify the layer that needs to perform fault injection (direct_conv, win_conv, fft_conv, fc, gemm, ReLU, GELU, softmax, avgpool2d, maxpool2d, etc)
 * --ber: Bit Error Rate (e.g., 1E-6)
 
 2、Model Fault Injection
