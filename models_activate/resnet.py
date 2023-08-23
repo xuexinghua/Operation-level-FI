@@ -18,8 +18,7 @@ class BatchNorm2d_fi_Bottleneck(nn.Module):
         self.bn2 = BatchNorm2d_fi(planes, ber, bit)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = BatchNorm2d_fi(planes * 4, ber, bit)
-        self.relu = nn.ReLU()        
-        
+        self.relu = nn.ReLU()                
         self.downsample = downsample
         self.stride = stride
 
@@ -34,16 +33,11 @@ class BatchNorm2d_fi_Bottleneck(nn.Module):
         out = self.relu(out)
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
             residual = self.downsample(x)
-
         out += residual       
         out = self.relu(out)
-
         return out   
-
-
 
 class BatchNorm2d_fi_ResNet(nn.Module):
 
@@ -51,8 +45,7 @@ class BatchNorm2d_fi_ResNet(nn.Module):
         super(BatchNorm2d_fi_ResNet, self).__init__()
 
         self.ber = ber
-        self.bit = bit    
-            
+        self.bit = bit             
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = BatchNorm2d_fi(64, ber, bit)
@@ -72,7 +65,6 @@ class BatchNorm2d_fi_ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
-
     def _make_layer(self, block, planes, blocks, stride):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
@@ -81,13 +73,11 @@ class BatchNorm2d_fi_ResNet(nn.Module):
                           stride=stride, bias=False),
                 BatchNorm2d_fi(planes * block.expansion, self.ber, self.bit),
             )
-
         layers = []
         layers.append(block(self.ber, self.bit, self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.ber, self.bit, self.inplanes, planes, 1))
-
         return nn.Sequential(*layers)
 
 
@@ -96,7 +86,6 @@ class BatchNorm2d_fi_ResNet(nn.Module):
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
@@ -104,7 +93,6 @@ class BatchNorm2d_fi_ResNet(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
-
         return x
 
         
@@ -112,13 +100,10 @@ def BatchNorm2d_fi_resnet50(ber, bit, pretrained=False, **kwargs):
  
     model = BatchNorm2d_fi_ResNet(ber, bit, BatchNorm2d_fi_Bottleneck, [3, 4, 6, 3], **kwargs)
     return model
-
-
         
 # relu
 class ReLU_fi_Bottleneck(nn.Module):
     expansion = 4
-
     def __init__(self, ber, bit, inplanes, planes, stride=1, downsample=None):
         super(ReLU_fi_Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
@@ -128,8 +113,7 @@ class ReLU_fi_Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = ReLU_fi(ber, bit)        
-        
+        self.relu = ReLU_fi(ber, bit)               
         self.downsample = downsample
         self.stride = stride
 
@@ -144,7 +128,6 @@ class ReLU_fi_Bottleneck(nn.Module):
         out = self.relu(out)
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
             residual = self.downsample(x)
 
@@ -153,16 +136,13 @@ class ReLU_fi_Bottleneck(nn.Module):
 
         return out   
 
-
-
 class ReLU_fi_ResNet(nn.Module):
 
     def __init__(self, ber, bit, block, layers, num_classes=1000):
         super(ReLU_fi_ResNet, self).__init__()
 
         self.ber = ber
-        self.bit = bit    
-            
+        self.bit = bit                
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -191,13 +171,11 @@ class ReLU_fi_ResNet(nn.Module):
                           stride=stride, bias=False),
                 nn.BatchNorm2d(planes * block.expansion),
             )
-
         layers = []
         layers.append(block(self.ber, self.bit, self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.ber, self.bit, self.inplanes, planes, 1))
-
         return nn.Sequential(*layers)
 
 
@@ -206,7 +184,6 @@ class ReLU_fi_ResNet(nn.Module):
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
@@ -216,18 +193,14 @@ class ReLU_fi_ResNet(nn.Module):
         x = self.fc(x)
 
         return x
-
         
 def ReLU_fi_resnet50(ber, bit, pretrained=False, **kwargs):
  
     model = ReLU_fi_ResNet(ber, bit, ReLU_fi_Bottleneck, [3, 4, 6, 3], **kwargs)
 
     return model
-
-
         
 # maxpool
-
 class Bottleneck(nn.Module):
     expansion = 4
 
@@ -235,13 +208,11 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, 3, stride, padding=1, bias=False)
-        
+        self.conv2 = nn.Conv2d(planes, planes, 3, stride, padding=1, bias=False)        
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = nn.ReLU()       
-        
+        self.relu = nn.ReLU()              
         self.downsample = downsample
         self.stride = stride
 
@@ -256,7 +227,6 @@ class Bottleneck(nn.Module):
         out = self.relu(out)
         out = self.conv3(out)
         out = self.bn3(out)
-
         if self.downsample is not None:
             residual = self.downsample(x)
 
@@ -265,15 +235,13 @@ class Bottleneck(nn.Module):
 
         return out   
 
-
 class MaxPool2d_fi_ResNet(nn.Module):
 
     def __init__(self, ber, bit, block, layers, num_classes=1000):
         super(MaxPool2d_fi_ResNet, self).__init__()
 
         self.ber = ber
-        self.bit = bit    
-            
+        self.bit = bit                
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -302,7 +270,6 @@ class MaxPool2d_fi_ResNet(nn.Module):
                           stride=stride, bias=False),
                 nn.BatchNorm2d(planes * block.expansion),
             )
-
         layers = []
         layers.append(block(self.ber, self.bit, self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
@@ -311,13 +278,11 @@ class MaxPool2d_fi_ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
@@ -325,7 +290,6 @@ class MaxPool2d_fi_ResNet(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
-
         return x
 
         
@@ -335,20 +299,14 @@ def MaxPool2d_fi_resnet50(ber, bit, pretrained=False, **kwargs):
 
     return model
               
-
-
-
 # avgpool
-
-
 class AvgPool2d_fi_ResNet(nn.Module):
 
     def __init__(self, ber, bit, block, layers, num_classes=1000):
         super(AvgPool2d_fi_ResNet, self).__init__()
 
         self.ber = ber
-        self.bit = bit    
-            
+        self.bit = bit                
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -377,7 +335,6 @@ class AvgPool2d_fi_ResNet(nn.Module):
                           stride=stride, bias=False),
                 nn.BatchNorm2d(planes * block.expansion),
             )
-
         layers = []
         layers.append(block(self.ber, self.bit, self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
@@ -386,13 +343,11 @@ class AvgPool2d_fi_ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
@@ -402,15 +357,9 @@ class AvgPool2d_fi_ResNet(nn.Module):
         x = self.fc(x)
 
         return x
-
         
 def AvgPool2d_fi_resnet50(ber, bit, pretrained=False, **kwargs):
  
     model = AvgPool2d_fi_ResNet(ber, bit, Bottleneck, [3, 4, 6, 3], **kwargs)
 
-    return model
-
-
-
-
-              
+    return model              
