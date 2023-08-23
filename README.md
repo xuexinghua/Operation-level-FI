@@ -8,18 +8,18 @@ OPFI(Operation Fault Injection) is an open-source Python tool for fault injectio
 ## Summary of OPFI's capabilities
 As of now, OPFI can inject errors in the following layer operations.
 * Linear layer
-** Convolutional layer
-*** Direct convolution
-*** Winograd convolution
-*** FFT convolution
-** FC layer
-** GEMM
+ * Convolutional layer
+  * Direct convolution
+  * Winograd convolution
+  * FFT convolution
+ * FC layer
+ * GEMM
 * Nonlinear layer
-** ReLU
-** GELU
-** Softmax
-** AvgPool2d
-** MaxPool2d
+ * ReLU
+ * GELU
+ * Softmax
+ * AvgPool2d
+ * MaxPool2d
 ## Usage
 ### 1、Training
 ```ruby
