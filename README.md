@@ -66,3 +66,19 @@ Its optional arguments are the following:
 * --ber: Bit Error Rate. （e.g., 1E-6）
 
 The bit-flip model can be selected by modifying ```error_model``` in line 8 or line9 in ```./layer/fi.py```
+
+## Output Data
+The following is a sample output for the workload presented earlier:
+Run ```python test_diff_layer.py --layertype direct_conv --ber 1e-8 1e-7 1e-6 1e-5 1e-4```:
+```ruby
+BER:  1e-8
+ErrorNum: 18, RMSE: 0
+BER:  1e-7
+ErrorNum: 173, RMSE: 2
+BER:  1e-6
+ErrorNum: 1718, RMSE: 5
+BER:  1e-5
+ErrorNum: 15243, RMSE: 19
+BER:  1e-4
+ErrorNum: 60694, RMSE: 64
+```
