@@ -18,6 +18,7 @@ As of now, OPFI can inject errors in the following layer operations.
   * MaxPool2d
   * BatchNorm
   * LayerNorm
+
 Currently, we have two fault models implemented:
 * random_bit_flip: Flip randomly selected bits from 0 to 1 or 1 to 0
 * specified_bit_flip: Flip the specified bit from 0 to 1 or 1 to 0
