@@ -14,7 +14,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='PyTorch')
-parser.add_argument('--layer', default='direct_conv')
+parser.add_argument('--layertype', default='direct_conv')
 parser.add_argument('--n_bit', default="16")
 parser.add_argument('--ber', nargs='+', type=float, default="[1e-10]")
 
