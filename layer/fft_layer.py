@@ -18,8 +18,6 @@ def quan_FI(p, bits, finum):
     fiinput = torch.reshape(p,(-1,))  
     num = fiinput.shape[-1]    
     bitnum = num*bits
-
-   
     if finum==0:
        fiinput = fiinput
     else:             
@@ -98,7 +96,6 @@ def complex_matmul(a, b, groups = 1):
 
     a = torch.movedim(a, 2, a.dim() - 1).unsqueeze(-2)
     b = torch.movedim(b, (1, 2), (b.dim() - 1, b.dim() - 2))
-
     # complex value matrix multiplication
     real = a.real @ b.real - a.imag @ b.imag
     imag = a.imag @ b.real + a.real @ b.imag
@@ -106,10 +103,7 @@ def complex_matmul(a, b, groups = 1):
     imag = torch.movedim(imag, imag.dim() - 1, 2).squeeze(-1)
     c = torch.zeros(real.shape, dtype=torch.complex64, device=a.device)
     c.real, c.imag = real, imag
-
     return c.view(c.size(0), -1, *c.shape[3:])
-
-
     
 def to_ntuple(val, n):
 
@@ -122,34 +116,21 @@ def to_ntuple(val, n):
     else:
         return n * (val,)
 
-
 def fft_conv(bits, signal, kernel, bias = None, padding = 0, padding_mode = "constant", stride = 1, dilation = 1, groups = 1):
 
     
     quant = Quant(bits)
-    kernel = quant(kernel)     
-    
-
+    kernel = quant(kernel)         
     n = signal.ndim - 2
     padding_ = to_ntuple(padding, n=n)
     stride_ = to_ntuple(stride, n=n)
     dilation_ = to_ntuple(dilation, n=n)
-
-
     offset = torch.zeros(1, 1, *dilation_, device=signal.device, dtype=signal.dtype)
     offset[(slice(None), slice(None), *((0,) * n))] = 1.0
-
-
     cutoff = tuple(slice(None, -d + 1 if d != 1 else None) for d in dilation_)
-
-
     kernel = torch.kron(kernel, offset)[(slice(None), slice(None)) + cutoff]
-
-
     signal_padding = [p for p in padding_[::-1] for _ in range(2)]
     signal = f.pad(signal, signal_padding, mode=padding_mode)
-
-
     if signal.size(-1) % 2 != 0:
         signal_ = f.pad(signal, [0, 1])
     else:
@@ -161,23 +142,16 @@ def fft_conv(bits, signal, kernel, bias = None, padding = 0, padding_mode = "con
         for pad in [0, signal_.size(i) - kernel.size(i)]
     ]
     padded_kernel = f.pad(kernel, kernel_padding)
-
-
     signal_fr = rfftn(signal_, dim=tuple(range(2, signal.ndim)))
     kernel_fr = rfftn(padded_kernel, dim=tuple(range(2, signal.ndim)))
-
     kernel_fr.imag *= -1
     output_fr = complex_matmul(signal_fr, kernel_fr, groups=groups)
     output = irfftn(output_fr, dim=tuple(range(2, signal.ndim)))
-
-
     crop_slices = [slice(0, output.size(0)), slice(0, output.size(1))] + [
         slice(0, (signal.size(i) - kernel.size(i) + 1), stride_[i - 2])
         for i in range(2, signal.ndim)
     ]
     output = output[crop_slices].contiguous()
-
-
     if bias is not None:
         bias_shape = tuple([1, -1] + (signal.ndim - 2) * [1])
         output += bias.view(bias_shape)
@@ -186,8 +160,6 @@ def fft_conv(bits, signal, kernel, bias = None, padding = 0, padding_mode = "con
 
 
 class _FFTConv(nn.Module):
-
-
     def __init__(self, in_channels, out_channels, kernel_size, bit, padding = 0, padding_mode = "constant", stride = 1, dilation = 1, groups = 1,  bias = True, ndim = 1):
 
         super().__init__()
@@ -201,7 +173,6 @@ class _FFTConv(nn.Module):
         self.groups = groups
         self.use_bias = bias
         self.bit = bit
-
         if in_channels % groups != 0:
             raise ValueError(
                 "'in_channels' must be divisible by 'groups'."
@@ -215,7 +186,6 @@ class _FFTConv(nn.Module):
 
         kernel_size = to_ntuple(kernel_size, ndim)
         weight = torch.randn(out_channels, in_channels // groups, *kernel_size)
-
         self.weight = nn.Parameter(weight)
         self.bias = nn.Parameter(torch.randn(out_channels)) if bias else None
 
@@ -244,23 +214,14 @@ def matmul_fi(a, b, ber, bits, num, mulnum):
     b = b.transpose(3, 4)
     a1 = a.unsqueeze(5).expand(-1, -1, -1, -1, -1, b.shape[3], -1)
     b1 = b.unsqueeze(3).expand(-1, -1, -1, a.shape[4], -1, -1)
-    p = a1*b1
-         
-    p = opt_fi(p, bits, mulnum)
-                
-    c = torch.cumsum(p, dim=-1)
-               
-    c_fi = opt_fi(c, bits, num)         
-             
+    p = a1*b1        
+    p = opt_fi(p, bits, mulnum)             
+    c = torch.cumsum(p, dim=-1)             
+    c_fi = opt_fi(c, bits, num)                    
     y_sum = c_fi[:,:,:,:,:,:, -1,...]
-    
-
     c_err = c_fi[:,:,:,:,:,:, 1:-1,...] - c[:,:,:,:,:,:, 1:-1,...]
-
-    c_error = c_err.sum(dim=-1)
-           
-    y = y_sum + c_error
-                               
+    c_error = c_err.sum(dim=-1)      
+    y = y_sum + c_error                         
     y = operation_fi(y, ber, bits) 
        
     return y    
@@ -287,27 +248,19 @@ def complex_matmul_fi(ber, bits, a, b, groups = 1):
 
     a = a.view(a.size(0), groups, -1, *a.shape[2:])
     b = b.view(groups, -1, *b.shape[1:])
-
     a = torch.movedim(a, 2, a.dim() - 1).unsqueeze(-2)
     b = torch.movedim(b, (1, 2), (b.dim() - 1, b.dim() - 2))
-    
     num = fi_num(a.real, b.real, 4, ber, bits)
     mulnum = fi_mulnum(a.real, b.real, 4, ber, bits)
-    
     # complex value matrix multiplication
     real_a = matmul_fi(a.real, b.real, ber, bits, num, mulnum)    
     real_b = matmul_fi(a.imag, b.imag, ber, bits, num, mulnum)    
     real = real_a - real_b    
-    
     imag_a = matmul_fi(a.imag, b.real, ber, bits, num, mulnum)    
     imag_b = matmul_fi(a.real, b.imag, ber, bits, num, mulnum)    
     imag = imag_a + imag_b
-
-
-
     real = torch.movedim(real, real.dim() - 1, 2).squeeze(-1)
-    imag = torch.movedim(imag, imag.dim() - 1, 2).squeeze(-1)
-    
+    imag = torch.movedim(imag, imag.dim() - 1, 2).squeeze(-1)   
     c = torch.zeros(real.shape, dtype=torch.complex64, device=a.device)
     c.real, c.imag = real, imag
 
@@ -315,32 +268,19 @@ def complex_matmul_fi(ber, bits, a, b, groups = 1):
 
 
 def fi_fft_conv(ber, bits, signal, kernel, bias = None, padding = 0, padding_mode = "constant", stride = 1, dilation = 1, groups = 1):
-
     
     quant = Quant(bits)
     kernel = quant(kernel)     
-    
-
     n = signal.ndim - 2
     padding_ = to_ntuple(padding, n=n)
     stride_ = to_ntuple(stride, n=n)
     dilation_ = to_ntuple(dilation, n=n)
-
-
     offset = torch.zeros(1, 1, *dilation_, device=signal.device, dtype=signal.dtype)
     offset[(slice(None), slice(None), *((0,) * n))] = 1.0
-
-
     cutoff = tuple(slice(None, -d + 1 if d != 1 else None) for d in dilation_)
-
-
     kernel = torch.kron(kernel, offset)[(slice(None), slice(None)) + cutoff]
-
-
     signal_padding = [p for p in padding_[::-1] for _ in range(2)]
     signal = f.pad(signal, signal_padding, mode=padding_mode)
-
-
     if signal.size(-1) % 2 != 0:
         signal_ = f.pad(signal, [0, 1])
     else:
@@ -352,30 +292,18 @@ def fi_fft_conv(ber, bits, signal, kernel, bias = None, padding = 0, padding_mod
         for pad in [0, signal_.size(i) - kernel.size(i)]
     ]
     padded_kernel = f.pad(kernel, kernel_padding)
-
-
     signal_fr = rfftn(signal_, dim=tuple(range(2, signal.ndim)))
     kernel_fr = rfftn(padded_kernel, dim=tuple(range(2, signal.ndim)))
-
-    kernel_fr.imag *= -1
-    
-
+    kernel_fr.imag *= -1  
     output_fr = complex_matmul_fi(ber, bits, signal_fr, kernel_fr, groups=groups)
     #print(output_fr)
-
-
-    
     output = irfftn(output_fr, dim=tuple(range(2, signal.ndim)))
     #print(output)
-
-
     crop_slices = [slice(0, output.size(0)), slice(0, output.size(1))] + [
         slice(0, (signal.size(i) - kernel.size(i) + 1), stride_[i - 2])
         for i in range(2, signal.ndim)
     ]
     output = output[crop_slices].contiguous()
-
-
     if bias is not None:
         bias_shape = tuple([1, -1] + (signal.ndim - 2) * [1])
         output += bias.view(bias_shape)
@@ -384,8 +312,6 @@ def fi_fft_conv(ber, bits, signal, kernel, bias = None, padding = 0, padding_mod
 
 
 class fi_FFTConv(nn.Module):
-
-
     def __init__(self, in_channels, out_channels, kernel_size, ber, bit, stride = 1, padding = 0, padding_mode = "constant", dilation = 1, groups = 1,  bias = True, ndim = 1):
 
         super().__init__()
@@ -400,7 +326,6 @@ class fi_FFTConv(nn.Module):
         self.use_bias = bias
         self.bit = bit
         self.ber = ber
-
         if in_channels % groups != 0:
             raise ValueError(
                 "'in_channels' must be divisible by 'groups'."
@@ -411,7 +336,6 @@ class fi_FFTConv(nn.Module):
                 "'out_channels' must be divisible by 'groups'."
                 f"Found: out_channels={out_channels}, groups={groups}."
             )
-
         kernel_size = to_ntuple(kernel_size, ndim)
         weight = torch.randn(out_channels, in_channels // groups, *kernel_size)
 
@@ -421,9 +345,6 @@ class fi_FFTConv(nn.Module):
     def forward(self, signal):
         return fi_fft_conv(self.ber, self.bit, signal, self.weight, bias=self.bias, padding=self.padding, padding_mode=self.padding_mode, stride=self.stride, dilation=self.dilation,  groups=self.groups,)
 
-
 FFTConv1d_fi = partial(fi_FFTConv, ndim=1)
 FFTConv2d_fi = partial(fi_FFTConv, ndim=2)
 FFTConv3d_fi = partial(fi_FFTConv, ndim=3)
-
-
