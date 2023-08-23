@@ -24,6 +24,7 @@ args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 best_acc = 0  # best test accuracy
+
 epochs = 5000  # start from epoch 0 or last checkpoint epoch
 
 # Data
