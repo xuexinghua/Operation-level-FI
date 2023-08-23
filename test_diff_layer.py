@@ -4,7 +4,6 @@ import torch
 import math
 import numpy as np
 import torch.nn.functional as F
-
 from layer.conv_layers import diret_conv2d_fi, diret_conv2d
 from layer.winograd_layers import win_conv2d_fi, win_conv2d
 from layer.fft_layer import fft_conv, fi_fft_conv
@@ -12,17 +11,14 @@ from layer.activate_layer import relu, relu_fi, maxpool2d, maxpool2d_fi, avgpool
 from layer.linear_layers import GEMM_fi, GEMM, quan_linear_fi, quan_linear
 import argparse
 
-
 parser = argparse.ArgumentParser(description='PyTorch')
 parser.add_argument('--layertype', default='direct_conv')
 parser.add_argument('--n_bit', default="16")
 parser.add_argument('--ber', nargs='+', type=float, default="[1e-10]")
-
 args = parser.parse_args()
 bits = args.n_bit
 BER = args.ber
 tiles = 2
-
 
 def rmse(y_noerror, y):
        
@@ -57,7 +53,6 @@ def test(ber, bit):
         fft_conv2d_error = fi_fft_conv(ber, bits, x, weight, padding=padding, stride=stride, bias=bias)
         RMSE, errornum = rmse(fft_conv2d_noerror, fft_conv2d_error)
         print( 'ErrorNum: %d, RMSE: %d'%(errornum, RMSE))
-
 
     elif args.layertype=="ReLU":
     
@@ -101,8 +96,7 @@ def test(ber, bit):
         RMSE, errornum = rmse(maxpool2d_noerror, maxpool2d_error)
         print( 'ErrorNum: %d, RMSE: %d'%(errornum, RMSE))
 
-    elif args.layertype=="gemm":
-    
+    elif args.layertype=="gemm":   
         # GEMM fi
         gemm_noerror = GEMM(a, b)
         print(gemm_noerror)
@@ -110,34 +104,24 @@ def test(ber, bit):
         print(gemm_error)
         RMSE, errornum = rmse(gemm_noerror, gemm_error)
         print( 'ErrorNum: %d, RMSE: %d'%(errornum, RMSE))
-
-
-
-    elif args.layertype=="fc":
-    
+           
+    elif args.layertype=="fc":    
         # GEMM fi
         fc_noerror = quan_linear(x, weight, bits, bias)
         
         fc_error = quan_linear_fi(x, weight, ber, bits, bias)
         
         RMSE, errornum = rmse(fc_noerror, fc_error)
-        print( 'ErrorNum: %d, RMSE: %d'%(errornum, RMSE))
-
-         
+        print( 'ErrorNum: %d, RMSE: %d'%(errornum, RMSE))         
     return RMSE, errornum
-
 
 if args.layertype=="gemm":
     a = torch.randn(2, 2, 32, 64).cuda() 
     b = torch.randn(2, 2, 64, 32).cuda() 
-
-
 elif args.layertype=="fc":
     x = torch.randn(2, 32, 64).cuda() 
     weight = torch.randn(128, 64).cuda() 
     bias = torch.randn(128).cuda()
-
-
 else:
     x = torch.randn(1, 64, 32, 32).cuda() 
     weight = torch.randn(64, 64, 3, 3).cuda() 
@@ -146,18 +130,6 @@ else:
     padding = 1 
     stride = 1
 
-
-
-
-
 for ber in BER:
-
     print( 'BER: %d'%(ber))
     RMSE, errornum = test(ber, bits)                     
-
-
-
-
-
-
-
