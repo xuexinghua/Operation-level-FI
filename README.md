@@ -34,6 +34,7 @@ Clone the repository
 ```ruby
 git clone https://github.com/xuexinghua/Operation-level-FI.git
 ```
+
 Download the trained model file and put it into the checkpoint/ folder
 
 ### Some examples of running fault injection are as follows:
