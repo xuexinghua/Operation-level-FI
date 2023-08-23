@@ -18,10 +18,12 @@ As of now, OPFI can inject errors in the following layer operations.
   * MaxPool2d
   * BatchNorm
   * LayerNorm
-
-Currently, we have two fault models implemented:
+  
+Currently, we have two bit-flip models implemented:
 * random_bit_flip: Flip randomly selected bits from 0 to 1 or 1 to 0
 * specified_bit_flip: Flip the specified bit from 0 to 1 or 1 to 0
+
+More custom layers can be added by modifying ```./layer/conv_layers.py``` or ```./layer/linear_layers.py``` or ```./layer/activate_layer.py```, New bit-flip models can be added by modifying ```./layer/fi.py```
 ## Requirements
 * Python (3.7)
 * pytorch（1.3.1）
