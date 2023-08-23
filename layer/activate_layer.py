@@ -14,24 +14,23 @@ from layer.fi import operation_fi
 
 
 #relu
-def relu(x, bit):
-
-
+def relu(x, bit):       
        
     a = torch.zeros_like(x)
     x = torch.max(x, a)
-
+       
     return x 
 
 
 class ReLU(nn.Module):
     def __init__(self, bit):
+           
         super(ReLU_fi, self).__init__()
-
+           
         self.bit = bit
 
-    def forward(self, x):
-        
+    def forward(self, x):    
+           
         y = relu(x, self.bit)
 
         return y 
@@ -61,7 +60,8 @@ class ReLU_fi(nn.Module):
 #gelu
 def gelu(x, bit):
 
-    x = 0.5 * x * (1 + torch.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * torch.pow(x, 3))))            
+    x = 0.5 * x * (1 + torch.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * torch.pow(x, 3))))    
+       
     return x
 
 
@@ -81,31 +81,18 @@ class GELU(nn.Module):
 
 def gelu_fi(x, ber, bit):
         
-
         a = math.sqrt(2 / math.pi)
-        
         b = 0.044715 * torch.pow(x, 3)   
-        
         b = operation_fi(b, ber, bit)
-     
         c = x + b
-        
         c = operation_fi(c, ber, bit)     
-        
         d = a * c
-       
         d = operation_fi(d, ber, bit)
-        
         e = 1 + torch.tanh(d)
-        
-        e = operation_fi(e, ber, bit)
-                
+        e = operation_fi(e, ber, bit)  
         f = 0.5 * x 
-        
         f = operation_fi(f, ber, bit)
-      
         x = f * e 
-        
         x = operation_fi(x, ber, bit)  
         
         return x  
@@ -132,13 +119,14 @@ def softmax(x, dim, bit):
         x_exp = x.exp()        
         partition = x_exp.sum(dim, keepdim=True)
         x = x_exp / partition  
+       
         return x    
         
 class Softmax(nn.Module):
 
     def __init__(self, dim, bit):
-
         super(Softmax, self).__init__()
+           
         self.dim = dim 
         self.bit = bit               
         
@@ -151,13 +139,12 @@ class Softmax(nn.Module):
 def softmax_fi(x, dim, ber, bit):
 
         x_exp = x.exp()
-        x_exp = operation_fi(x_exp, ber, bit) 
-        
+        x_exp = operation_fi(x_exp, ber, bit)      
         partition = x_exp.sum(dim, keepdim=True)        
         partition = operation_fi(partition, ber, bit) 
-        
         x = x_exp / partition               
         x = operation_fi(x, ber, bit) 
+       
         return x 
 
 class Softmax_fi(nn.Module):
@@ -181,11 +168,13 @@ class Softmax_fi(nn.Module):
 def avgpool2d(x, bit, kernel_size, stride):
 
     x = F.avg_pool2d(x, kernel_size, stride)
+       
     return x
 
 class AvgPool2d(nn.Module):
     def __init__(self, bit, kernel_size=2, stride=2):
         super(AvgPool2d, self).__init__()
+           
         self.bit = bit
         self.stride = stride
         self.kernel_size = kernel_size
@@ -201,12 +190,14 @@ def avgpool2d_fi(x, ber, bit, kernel_size, stride):
 
         x = operation_fi(x, ber, bit)      
         x = F.avg_pool2d(x, kernel_size, stride)
+       
         return x
 
         
 class AvgPool2d_fi(nn.Module):
     def __init__(self, ber, bit, kernel_size=2, stride=2):
         super(AvgPool2d_fi, self).__init__()
+           
         self.ber = ber
         self.bit = bit
         self.stride = stride
@@ -220,15 +211,16 @@ class AvgPool2d_fi(nn.Module):
 
 
 #MaxPool2d
-
-
 def maxpool2d(x, bit, kernel_size, stride, padding):
+       
     x = F.max_pool2d(x, kernel_size, stride, padding)
+       
     return x
 
 class MaxPool2d(nn.Module):
     def __init__(self, kernel_size=2, stride=2, padding = 0):
         super(MaxPool2d, self).__init__()
+           
         self.stride = stride
         self.kernel_size = kernel_size
         self.bit = bit
@@ -237,16 +229,20 @@ class MaxPool2d(nn.Module):
     def forward(self, x):
     
         y = maxpool2d(x, self.bit, self.kernel_size, self.stride, self.padding)
+           
         return y
 
 def maxpool2d_fi(x, ber, bit, kernel_size, stride, padding):
+       
         x = operation_fi(x, ber, bit)      
         x = F.max_pool2d(x, kernel_size, stride, padding)
+       
         return x
 
 class MaxPool2d_fi(nn.Module):
     def __init__(self, ber, bit, kernel_size, stride, padding = 0):
         super(MaxPool2d_fi, self).__init__()
+           
         self.ber = ber
         self.bit = bit
         self.stride = stride
@@ -256,6 +252,7 @@ class MaxPool2d_fi(nn.Module):
     def forward(self, x):
 
         y = maxpool2d_fi(x, self.ber, self.bit, self.kernel_size, self.stride, self.padding)
+           
         return y       
 
 
@@ -276,12 +273,9 @@ class LayerNorm(nn.Module):
         
         mean = x.mean(-1, keepdim=True)
         std = x.std(-1, keepdim=True)
-        
         x = x - mean
-        x = self.weight * x
-                
+        x = self.weight * x 
         x = x / (std + self.epsilon) + self.bias
-
               
         return x        
 
@@ -300,17 +294,13 @@ class LayerNorm_fi(nn.Module):
     def forward(self, x):
         
         mean = x.mean(-1, keepdim=True)
-        std = x.std(-1, keepdim=True)
-        
+        std = x.std(-1, keepdim=True)        
         x = x - mean
-        x = operation_fi(x, self.ber, self.bit) 
-        
+        x = operation_fi(x, self.ber, self.bit)      
         x = self.weight * x
-        x = operation_fi(x, self.ber, self.bit) 
-        
+        x = operation_fi(x, self.ber, self.bit)         
         x = x / (std + self.epsilon)
-        x = operation_fi(x, self.ber, self.bit) 
-        
+        x = operation_fi(x, self.ber, self.bit)     
         x = x + self.bias        
         x = operation_fi(x, self.ber, self.bit) 
                       
@@ -321,6 +311,7 @@ class LayerNorm_fi(nn.Module):
 class BatchNorm2d(nn.Module):
     def __init__(self, num_features, momentum=0.1, eps=1e-5, affine=True, track_running_stats=True):
         super().__init__()
+           
         self.momentum = momentum
         self.eps = eps
         self.num_batches_tracked = nn.Parameter(torch.tensor(0.))
@@ -336,6 +327,7 @@ class BatchNorm2d(nn.Module):
             self.register_parameter('running_var', None)
 
     def forward(self, x):
+           
         assert len(x.shape) == 4
         b, c, h, w = x.shape
         assert b > 1
@@ -355,7 +347,6 @@ class BatchNorm2d(nn.Module):
         mu = mu.reshape(1, c, 1, 1)
         sigma = sigma.reshape(1, c, 1, 1)
         result = (x - mu) / torch.sqrt(sigma + self.eps)
-
         param_shape = [1] * len(result.shape)
         param_shape[1] = self.num_channels
         result = result * self.weight.reshape(*param_shape) + self.bias.reshape(*param_shape)        
@@ -367,8 +358,7 @@ class BatchNorm2d_fi(nn.Module):
         super().__init__()
 
         self.ber = ber
-        self.bit = bit
-        
+        self.bit = bit        
         self.momentum = momentum
         self.eps = eps
         self.num_batches_tracked = nn.Parameter(torch.tensor(0.))
@@ -380,8 +370,8 @@ class BatchNorm2d_fi(nn.Module):
         self.register_buffer('running_mean', torch.zeros(num_features))
         self.register_buffer('running_var', torch.ones(num_features))
 
-
     def forward(self, x):
+           
         assert len(x.shape) == 4
         b, c, h, w = x.shape
         assert b > 1
@@ -391,32 +381,16 @@ class BatchNorm2d_fi(nn.Module):
         self.running_mean = self.running_mean * (1 - self.momentum) + mu * self.momentum
         self.running_var = self.running_var * (1 - self.momentum) + sigma_unbiased * self.momentum
         mu = mu.reshape(1, c, 1, 1)
-        sigma = sigma.reshape(1, c, 1, 1)        
-                  
+        sigma = sigma.reshape(1, c, 1, 1)                     
         x = x - mu        
         x = operation_fi(x, self.ber, self.bit)
-        
         result = x / torch.sqrt(sigma + self.eps)    
         result = operation_fi(result, self.ber, self.bit)     
-        
         param_shape = [1] * len(result.shape)
         param_shape[1] = self.num_channels                 
         result = result * self.weight.reshape(*param_shape)
-        result = operation_fi(result, self.ber, self.bit)
-        
-        
+        result = operation_fi(result, self.ber, self.bit)   
         result = result + self.bias.reshape(*param_shape)            
         result = operation_fi(result, self.ber, self.bit)           
     
-        return result
-
-       
-  
-
-        
-
-
-
-
-
-        
+        return result        
