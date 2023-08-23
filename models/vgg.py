@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 from layer.conv_layers import conv2d_fi
 from layer.winograd_layers import winconv2d_fi, winconv2d
-from layer.activate_layer import BatchNorm2d_fi, ReLU_fi, MaxPool2d_fi, AvgPool2d_fi, ReLU
 from layer.fft_layer import FFTConv2d_fi, FFTConv2d
 
 tiles = 2
@@ -41,7 +40,7 @@ class VGG(nn.Module):
             else:
                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1,bias=True),
                            nn.BatchNorm2d(x),
-                           ReLU()]
+                           nn.ReLU()]
                                                       
                 in_channels = x                
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
@@ -73,7 +72,7 @@ class winVGG(nn.Module):
             else:
                 layers += [winconv2d(in_channels, x, 3, tiles, self.bit, stride=1, padding=1, bias=True),
                            nn.BatchNorm2d(x),
-                           ReLU()]   
+                           nn.ReLU()]   
                                                  
                 in_channels = x                
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
@@ -108,7 +107,7 @@ class fftVGG(nn.Module):
             else:
                 layers += [FFTConv2d(in_channels, x, 3, self.bit, padding=1, stride=1, bias=True),
                            nn.BatchNorm2d(x),
-                           ReLU()]   
+                           nn.ReLU()]   
                                                
                 in_channels = x                
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
@@ -139,7 +138,7 @@ class fi_fftVGG(nn.Module):
             else:
                 layers += [FFTConv2d_fi(in_channels, x, 3, self.ber, self.bit, stride=1, padding=1, bias=True),
                            nn.BatchNorm2d(x),
-                           ReLU()]   
+                           nn.ReLU()]   
                                                
                 in_channels = x                
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
@@ -171,7 +170,7 @@ class fi_VGG(nn.Module):
             else:
                 layers += [conv2d_fi(in_channels, x, 3, self.ber, self.bit, stride=1, padding=1, bias=True),
                            nn.BatchNorm2d(x),
-                           ReLU()]  
+                           nn.ReLU()]  
                 in_channels = x     
                            
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
@@ -203,7 +202,7 @@ class fi_winVGG(nn.Module):
             else:
                 layers += [winconv2d_fi(in_channels, x, 3, tiles, self.ber, self.bit, stride=1, padding=1, bias=True),
                            nn.BatchNorm2d(x),
-                           ReLU()]                     
+                           nn.ReLU()]                     
                 in_channels = x   
                              
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]

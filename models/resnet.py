@@ -5,7 +5,6 @@ import torch.nn as nn
 import torchvision.models
 from layer.conv_layers import conv2d_fi
 from layer.winograd_layers import winconv2d_fi, winconv2d
-from layer.activate_layer import BatchNorm2d_fi, ReLU_fi, MaxPool2d_fi, AvgPool2d_fi, ReLU
 from layer.fft_layer import FFTConv2d_fi, FFTConv2d
 tiles = 2    
 
@@ -23,7 +22,7 @@ class Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = ReLU()        
+        self.relu = nn.ReLU()        
         
         self.downsample = downsample
         self.stride = stride
@@ -61,7 +60,7 @@ class fi_Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = ReLU()        
+        self.relu = nn.ReLU()        
         
         self.downsample = downsample
         self.stride = stride
@@ -99,7 +98,7 @@ class fi_win_Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = ReLU()
+        self.relu = nn.ReLU()
         
         self.downsample = downsample
         self.stride = stride
@@ -137,7 +136,7 @@ class fi_fft_Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = ReLU()
+        self.relu = nn.ReLU()
    
         self.downsample = downsample
         self.stride = stride

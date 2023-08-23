@@ -5,7 +5,6 @@ import torch.nn as nn
 import torchvision.models
 from layer.conv_layers import conv2d_fi
 from layer.winograd_layers import winconv2d_fi, winconv2d
-from layer.activate_layer import BatchNorm2d_fi, ReLU_fi, MaxPool2d_fi, AvgPool2d_fi, ReLU
 from layer.fft_layer import FFTConv2d_fi, FFTConv2d
 tiles = 2
 
