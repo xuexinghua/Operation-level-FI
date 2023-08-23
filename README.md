@@ -41,11 +41,12 @@ Then, download the trained model file and put it into the checkpoint/ folder
 1、Single layer fault injection
 
 ```ruby
-CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layertype LAYER ] [ --ber BITERRORRATE ]
+CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layer LAYERTYPE ] [ --ber BITERRORRATE ]
 ```
 
 Its optional arguments are the following:
-
+* --layer:
+* --ber:
 
 2、Model Fault Injection
 
