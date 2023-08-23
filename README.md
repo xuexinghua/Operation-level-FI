@@ -45,8 +45,8 @@ CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layer LAYERTYPE ] [ --be
 ```
 
 Its optional arguments are the following:
-* --layer:
-* --ber:
+* --layer: Specify the layer that needs to perform fault injection (e.g., direct_conv, win_conv, fft_conv, fc, gemm, ReLU, GELU, softmax, avgpool2d, maxpool2d)
+* --ber: Bit Error Rate. （e.g., 1E-6）
 
 2、Model Fault Injection
 
