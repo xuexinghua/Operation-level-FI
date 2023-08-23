@@ -1,0 +1,33 @@
+
+source activate PyTorchWA
+cd /home/xuexinghua/github/operation_fi/
+nvidia-smi
+
+
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer direct_conv --ber 1e-3
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer win_conv --ber 1e-3
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer fft_conv --ber 1e-3
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer ReLU --ber 1e-3
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer GELU --ber 1e-2
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer softmax --ber 1e-6
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer avgpool2d --ber 1e-4
+CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer maxpool2d --ber 1e-2
+
+
+CUDA_VISIBLE_DEVICES=6 python test_model_linearfi.py --net vgg19_fi --dataset cifar100 --ber 1E-10 1E-9
+CUDA_VISIBLE_DEVICES=14 python test_model_linearfi.py --net winvgg19_fi --dataset cifar100 --ber 1E-10 1E-9
+CUDA_VISIBLE_DEVICES=10 python test_model_linearfi.py --net fft_vgg19_fi --dataset cifar100 --ber 1E-9 1E-8
+
+
+CUDA_VISIBLE_DEVICES=14 python test_model_nonlinearfi.py  --net vgg19_BatchNorm2d_fi --dataset cifar100 --ber 1e-8 1E-7
+CUDA_VISIBLE_DEVICES=13 python test_model_nonlinearfi.py  --net vgg19_ReLU_fi --dataset cifar100 --ber 1E-7 1e-6
+CUDA_VISIBLE_DEVICES=12 python test_model_nonlinearfi.py --net vgg19_AvgPool2d_fi --dataset cifar100 --ber 1e-4 1e-3
+CUDA_VISIBLE_DEVICES=12 python test_model_nonlinearfi.py  --net vgg19_MaxPool2d_fi --dataset cifar100 --ber 1E-7 1e-6
+
+
+
+CUDA_VISIBLE_DEVICES=14 python test_model_linearfi.py --net resnet_fi --dataset imagenet --ber 1E-10 1E-9
+
+
+
+
