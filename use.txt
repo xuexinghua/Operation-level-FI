@@ -1,9 +1,4 @@
 
-source activate PyTorchWA
-cd /home/xuexinghua/github/operation_fi/
-nvidia-smi
-
-
 CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer direct_conv --ber 1e-3
 CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer win_conv --ber 1e-3
 CUDA_VISIBLE_DEVICES=12 python test_diff_layer.py --layer fft_conv --ber 1e-3
