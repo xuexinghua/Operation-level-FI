@@ -232,3 +232,9 @@ for ber in BER:
          
          print( 'BER: %d, average accurancy: %d'%(ber, tacc))
          
+
+
+
+
+
+
