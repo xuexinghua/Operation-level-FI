@@ -72,9 +72,9 @@ The following is a sample output for the workload presented earlier
 
 Run ```python test_diff_layer.py --layertype direct_conv --ber 1e-8 1e-7 1e-6 1e-5 1e-4```:
 ```ruby
-BER:  1e-8, ErrorNum: 17, RMSE: 1.1836
-BER:  1e-7, ErrorNum: 171, RMSE: 2.2882
-BER:  1e-6, ErrorNum: 1727, RMSE: 5.9762
-BER:  1e-5, ErrorNum: 15262, RMSE: 19.4008
-BER:  1e-4, ErrorNum: 60800, RMSE: 64.4875
+BER: 1e-8, ErrorNum: 17, RMSE: 1.1836
+BER: 1e-7, ErrorNum: 171, RMSE: 2.2882
+BER: 1e-6, ErrorNum: 1727, RMSE: 5.9762
+BER: 1e-5, ErrorNum: 15262, RMSE: 19.4008
+BER: 1e-4, ErrorNum: 60800, RMSE: 64.4875
 ```
