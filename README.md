@@ -34,13 +34,24 @@ Clone the repository
 ```ruby
 git clone https://github.com/xuexinghua/Operation-level-FI.git
 ```
-### 1、Training
+### Some examples of running fault injection are as follows:
+1、Single layer fault injection
+
 ```ruby
-python train.py
+CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py --layertype direct_conv --ber 1e-6
 ```
-### 2、Evaluating
+
+2、Model Fault Injection
+Fault Injection for Linear Layers in Model
 ```ruby
-python test_vgg19.py
+CUDA_VISIBLE_DEVICES=XXX python test_model_linearfi.py --net vgg19_fi --dataset cifar100 --ber 1E-10 1E-9
 ```
+
+Fault Injection for Nonlinear Layers in Model
+```ruby
+CUDA_VISIBLE_DEVICES=XXX python test_model_nonlinearfi.py  --net vgg19_ReLU_fi --dataset cifar100 --ber 1E-7 1e-6
+```
+
+
 In ```test_vgg19.py```, using ```net = VGG('VGG19')``` in line 33 to test the accuracy of the standard convolution without failure, using ```net = VGG_fi('VGG19')``` in line 34 to test the accuracy of the standard convolution with failure.
 You can modify the ```ber = XXX``` in ```./layer/layers.py``` to set the bit error rate parameter.
