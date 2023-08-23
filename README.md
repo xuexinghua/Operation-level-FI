@@ -41,19 +41,22 @@ Then, download the trained model file and put it into the checkpoint/ folder
 1、Single layer fault injection
 
 ```ruby
-CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py --layertype direct_conv --ber 1e-6
+CUDA_VISIBLE_DEVICES=XXX python test_diff_layer.py  [ --layertype LAYER ] [ --ber BITERRORRATE ]
 ```
+
+Its optional arguments are the following:
+
 
 2、Model Fault Injection
 
 Fault Injection for Linear Layers in Model
 ```ruby
-CUDA_VISIBLE_DEVICES=XXX python test_model_linearfi.py --net vgg19_fi --dataset cifar100 --ber 1E-10 1E-9
+CUDA_VISIBLE_DEVICES=XXX python test_model_linearfi.py [ --net MODEL ] [ --dataset DATASET ] [ --ber BITERRORRATE ]
 ```
 
 Fault Injection for Nonlinear Layers in Model
 ```ruby
-CUDA_VISIBLE_DEVICES=XXX python test_model_nonlinearfi.py  --net vgg19_ReLU_fi --dataset cifar100 --ber 1E-7 1e-6
+CUDA_VISIBLE_DEVICES=XXX python test_model_nonlinearfi.py  [ --net MODEL ] [ --dataset DATASET ] [ --ber BITERRORRATE ]
 ```
 
 
