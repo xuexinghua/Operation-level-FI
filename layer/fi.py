@@ -10,8 +10,6 @@ error_model = 'random_bit_flip'
 
 flip_bit_position = 7
 
-
-
 def quan_FI(p,ab,bit):
     
     bit = int(bit)
@@ -20,7 +18,6 @@ def quan_FI(p,ab,bit):
     bitnum = num*bit
     w = ab*bitnum      
     finum = round(w)
-
     if finum==0:
        fiinput = fiinput
     else:             
@@ -52,7 +49,6 @@ def quan_mulFI(p,ab,bit):
     bitnum = num*bit
     w = 2*ab*bitnum  
     finum = round(w)
-
     if finum==0:
        fiinput = fiinput
     else:             
@@ -128,10 +124,7 @@ def operation_fi(x, ber, bits):
         fiinput = quan_FI(x, ber, bits)
         out = torch.reshape(fiinput,(b,h,w,f,m,n,o))                  
     return out    
-
-
-
-    
+ 
 def operation_mulfi(x, ber, bits):       
     
     y = x.shape
@@ -171,7 +164,6 @@ def operation_mulfi(x, ber, bits):
         n = x.shape[5]
         fiinput = quan_mulFI(x, ber, bits)
         out = torch.reshape(fiinput,(b,h,w,f,m,n))            
-
     elif z == 7:
         b = x.shape[0]        
         h = x.shape[1]        
@@ -182,8 +174,4 @@ def operation_mulfi(x, ber, bits):
         o = x.shape[6]
         fiinput = quan_mulFI(x, ber, bits)
         out = torch.reshape(fiinput,(b,h,w,f,m,n,o))                  
-    return out  
-    
-
-    
-    
+    return out      
