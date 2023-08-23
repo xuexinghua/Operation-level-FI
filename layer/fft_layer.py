@@ -278,7 +278,7 @@ def fi_mulnum(a, b, n_op, ber, bits):
     
     bits = int(bits)
     fiinput = torch.reshape(a,(-1,))  
-    num = round(fiinput.shape[-1] * b.shape[-1] * n_op * bits * ber * bits * 2)   
+    num = round(fiinput.shape[-1] * b.shape[-1] * n_op * bits * ber * 2)   
     num = round(num /n_op)
     return num
             
