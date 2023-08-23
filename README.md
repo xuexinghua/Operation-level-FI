@@ -35,7 +35,7 @@ Clone the repository
 git clone https://github.com/xuexinghua/Operation-level-FI.git
 ```
 
-Then, download the trained model file and put it into the ```checkpoint/``` folder
+Then, download the trained model file and put it into the ```checkpoint/``` folder. Put the downloaded dataset in  ```data/``` folder. 
 
 ### Some examples of running fault injection are as follows:
 1、Single layer fault injection
