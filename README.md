@@ -19,7 +19,7 @@ As of now, OPFI can inject errors in the following layer operations.
   * BatchNorm
   * LayerNorm
   
-Currently, we have two bit-flip models implemented:
+Currently, we have two bit-flip models:
 * random_bit_flip: Flip randomly selected bits from 0 to 1 or 1 to 0
 * specified_bit_flip: Flip the specified bit from 0 to 1 or 1 to 0
 
