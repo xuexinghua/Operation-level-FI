@@ -1,5 +1,5 @@
 # Operation-level fault injection
-OPFI(Operation Fault Injection) is an open-source Python tool for fault injection on multiplication and addition operations of DNNs. OPFI can support fault injection on various linear layers and nonlinear layers, and also supports fault injection on mainstream convolution layer optimization algorithms such as winograd and FFT. Fault injection in OPFI is achieved through tasks performed on target operations, each task can correspond to a specific layer or application, which can be a baseline or a fault trigger.
+OPFI(Operation Fault Injection) is an open-source Python tool for fault injection on multiplication and addition operations of DNNs. OPFI can support fault injection on various linear layers and nonlinear layers, and also supports fault injection on mainstream convolution layer optimization algorithms such as winograd and FFT. Each task can correspond to a specific layer or application, which can be a baseline or a fault trigger.
 
 ## OPFI will support the following:
 As of now, OPFI can inject errors in the following layer operations.
